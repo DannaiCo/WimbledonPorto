@@ -130,38 +130,41 @@
   </div>
 
   <script>
-    fetch("https://script.google.com/macros/s/AKfycbwkUAXm0YV258K7eiDl9SrezyTuqzUa9PHoktt7bOM9_wwYD0XG1gryfAY_q4uxEnTDmw/exec")
-      .then(res => res.json())
-      .then(data => {
-        const wrapper = document.getElementById("partido-wrapper");
-        if (!data.partidos || data.partidos.length === 0) {
-          wrapper.innerHTML = "No hay partidos programados para hoy.";
-          return;
-        }
+  fetch("https://script.google.com/macros/s/AKfycbwkUAXm0YV258K7eiDl9SrezyTuqzUa9PHoktt7bOM9_wwYD0XG1gryfAY_q4uxEnTDmw/exec")
+    .then(res => res.json())
+    .then(data => {
+      const wrapper = document.getElementById("partido-wrapper");
+      if (!data.partidos || data.partidos.length === 0) {
+        wrapper.innerHTML = "No hay partidos programados para hoy.";
+        return;
+      }
 
-        let partidos = data.partidos;
-        let index = 0;
+      let partidos = data.partidos;
+      let index = parseInt(localStorage.getItem("ultimoIndex") || "0");
 
-        function mostrarPartido(i) {
-          const p = partidos[i];
-          wrapper.innerHTML = `
-            <div class="jugadorA">${p.jugadorA}</div>
-            <div class="jugadorB">${p.jugadorB}</div>
-            <div class="cancha">Cancha: ${p.cancha}</div>
-            <div class="fecha">${p.fecha}</div>
-            <div class="hora">${p.hora}</div>
-          `;
-        }
+      function mostrarPartido(i) {
+        const p = partidos[i];
+        wrapper.innerHTML = `
+          <div class="jugadorA">${p.jugadorA}</div>
+          <div class="jugadorB">${p.jugadorB}</div>
+          <div class="cancha">Cancha: ${p.cancha}</div>
+          <div class="fecha">${p.fecha}</div>
+          <div class="hora">${p.hora}</div>
+        `;
+        localStorage.setItem("ultimoIndex", i); // guarda el último mostrado
+      }
 
+      mostrarPartido(index);
+
+      setInterval(() => {
+        index = (index + 1) % partidos.length;
         mostrarPartido(index);
-        setInterval(() => {
-          index = (index + 1) % partidos.length;
-          mostrarPartido(index);
-        }, 15000);
-      });
-  </script>
+      }, 15000);
+    });
+</script>
 </body>
 </html>
+
 
 
 
